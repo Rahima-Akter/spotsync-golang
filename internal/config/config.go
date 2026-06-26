@@ -8,12 +8,13 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// Config holds all configuration for our application
 type Config struct {
 	// Server settings
 	AppPort string
 	AppEnv  string
 
-	// Supabase Database settings
+	// Database settings
 	DatabaseURL string
 
 	// JWT settings
@@ -21,14 +22,13 @@ type Config struct {
 	JWTExpiryHours int
 }
 
+// Load reads configuration from .env file and environment variables
 func Load() *Config {
-	// Load .env file if it exists
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatal("Warning: .env file not found, using environment variables")
 	}
 
-	// Parse JWT expiry hours (convert string to int)
 	jwtExpiryHours, err := strconv.Atoi(getEnv("JWT_EXPIRY_HOURS", "24"))
 	if err != nil {
 		log.Fatal("Invalid JWT_EXPIRY_HOURS value")
@@ -38,21 +38,18 @@ func Load() *Config {
 		AppPort:        getEnv("APP_PORT", "8080"),
 		AppEnv:         getEnv("APP_ENV", "development"),
 		DatabaseURL:    getEnv("DATABASE_URL", ""),
-		JWTSecret:      getEnv("JWT_SECRET", "jwt_very_strong_secret"),
+		JWTSecret:      getEnv("JWT_SECRET", "default-secret-change-me"),
 		JWTExpiryHours: jwtExpiryHours,
 	}
 
 	return config
 }
 
-// DSN = Data Source Name
+// GetDSN returns the database connection URL directly
 func (c *Config) GetDSN() string {
-	// if database url exists
 	return c.DatabaseURL
-
 }
 
-// This is a helper function to avoid repetitive code
 func getEnv(key, defaultValue string) string {
 	value := os.Getenv(key)
 	if value == "" {

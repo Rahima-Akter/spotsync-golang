@@ -1,0 +1,28 @@
+root = "."
+testdata_dir = "testdata"
+tmp_dir = "tmp"
+
+[build]
+  # Use go run directly to avoid Windows application control blocking locally built binaries.
+  cmd = "echo build ok"
+  entrypoint = ["go", "run", "./cmd/server"]
+  include_ext = ["go", "tpl", "tmpl", "html"]
+  exclude_dir = ["assets", "tmp", "vendor", "testdata"]
+  delay = 1000
+  kill_delay = "0s"
+
+[color]
+  build = "yellow"
+  runner = "green"
+  watcher = "cyan"
+
+[log]
+  main_only = false
+  time = false
+
+[misc]
+  clean_on_exit = false
+
+[screen]
+  clear_on_rebuild = false
+  keep_scroll = true
