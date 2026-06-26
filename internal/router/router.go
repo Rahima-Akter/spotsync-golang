@@ -12,7 +12,7 @@ import (
 // const router = express.Router();
 // router.post('/auth/register', authController.register);
 // app.use('/api/v1', router);
-func SetupRoutes(e *echo.Echo, authHandler *handler.AuthHandler, cfg *config.Config) {
+func SetupRoutes(e *echo.Echo, authHandler *handler.AuthHandler, zoneHandler *handler.ZoneHandler, cfg *config.Config) {
 
 	api := e.Group("/api/v1")
 
@@ -28,6 +28,8 @@ func SetupRoutes(e *echo.Echo, authHandler *handler.AuthHandler, cfg *config.Con
 	// Test handler for verifying auth works
 	testHandler := handler.NewTestHandler()
 	protected.GET("/profile", testHandler.GetProfile)
+	protected.GET("/admin/dashboard", testHandler.AdminDashboard, middleware.RequireRole("admin"))
+	protected.GET("/driver/dashboard", testHandler.DriverDashboard, middleware.RequireRole("driver"))
 
 	// Admin-only routes
 	adminOnly := protected.Group("")
@@ -39,7 +41,17 @@ func SetupRoutes(e *echo.Echo, authHandler *handler.AuthHandler, cfg *config.Con
 	driverOnly.Use(middleware.RequireRole("driver"))
 	driverOnly.GET("/driver/dashboard", testHandler.DriverDashboard)
 
-	// We'll add these in later steps:
 	// zones
+	// public
+	api.GET("/zones", zoneHandler.GetAll)
+	api.GET("/zones/:id", zoneHandler.GetByID)
+
+	// admin-only
+	adminZones := protected.Group("/zones")
+	adminZones.Use(middleware.RequireRole("admin"))
+	adminZones.POST("", zoneHandler.Create)
+	adminZones.PUT("/:id", zoneHandler.Update)
+	adminZones.DELETE("/:id", zoneHandler.Delete)
+
 	// reservations
 }

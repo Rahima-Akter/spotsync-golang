@@ -17,7 +17,7 @@ var (
 	ErrUnauthorized = errors.New("unauthorized access")
 
 	// 403 Forbidden
-	ErrForbidden = errors.New("forbidden: insufficient permissions")
+	ErrForbidden = errors.New("forbidden: Permissions denied")
 
 	//  409 Conflict
 	ErrZoneFull = errors.New("parking zone is at full capacity")

@@ -45,13 +45,18 @@ func main() {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORS())
 
-	// Dependency Injection
+	// auth repository
 	userRepo := repository.NewUserRepository(db)
 	authService := service.NewAuthService(userRepo, cfg)
 	authHandler := handler.NewAuthHandler(authService)
 
+	// zone repository
+	zoneRepo := repository.NewZoneRepository(db)
+	zoneService := service.NewZoneService(zoneRepo)
+	zoneHandler := handler.NewZoneHandler(zoneService)
+
 	// Setup Routes
-	router.SetupRoutes(e, authHandler, cfg)
+	router.SetupRoutes(e, authHandler, zoneHandler, cfg)
 
 	// Start server
 	go func() {

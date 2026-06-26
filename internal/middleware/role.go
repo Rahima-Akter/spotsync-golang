@@ -32,7 +32,7 @@ func RequireRole(allowedRoles ...string) echo.MiddlewareFunc {
 			return utils.ErrorResponse(
 				c,
 				http.StatusForbidden,
-				"Insufficient permissions",
+				"Permission denied",
 				"This action requires one of these roles: "+joinRoles(allowedRoles),
 			)
 		}
