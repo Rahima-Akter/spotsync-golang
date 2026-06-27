@@ -12,7 +12,8 @@ import (
 // const router = express.Router();
 // router.post('/auth/register', authController.register);
 // app.use('/api/v1', router);
-func SetupRoutes(e *echo.Echo, authHandler *handler.AuthHandler, zoneHandler *handler.ZoneHandler, cfg *config.Config) {
+func SetupRoutes(e *echo.Echo, authHandler *handler.AuthHandler, zoneHandler *handler.ZoneHandler,
+	reservationHandler *handler.ReservationHandler, cfg *config.Config) {
 
 	api := e.Group("/api/v1")
 
@@ -54,4 +55,11 @@ func SetupRoutes(e *echo.Echo, authHandler *handler.AuthHandler, zoneHandler *ha
 	adminZones.DELETE("/:id", zoneHandler.Delete)
 
 	// reservations
+	reservations := protected.Group("/reservations")
+	reservations.POST("", reservationHandler.Reserve)
+	reservations.GET("/my-reservations", reservationHandler.GetMyReservations)
+	reservations.DELETE("/:id", reservationHandler.Cancel)
+
+	// Admin-only
+	reservations.GET("", reservationHandler.GetAll, middleware.RequireRole("admin"))
 }

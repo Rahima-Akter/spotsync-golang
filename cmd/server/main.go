@@ -54,9 +54,13 @@ func main() {
 	zoneRepo := repository.NewZoneRepository(db)
 	zoneService := service.NewZoneService(zoneRepo)
 	zoneHandler := handler.NewZoneHandler(zoneService)
+	// reservation repository
+	reservationRepo := repository.NewReservationRepository(db)
+	reservationService := service.NewReservationService(reservationRepo, zoneRepo)
+	reservationHandler := handler.NewReservationHandler(reservationService)
 
 	// Setup Routes
-	router.SetupRoutes(e, authHandler, zoneHandler, cfg)
+	router.SetupRoutes(e, authHandler, zoneHandler, reservationHandler, cfg)
 
 	// Start server
 	go func() {
