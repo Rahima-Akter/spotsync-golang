@@ -9,9 +9,20 @@
 
 A centralized platform for busy airports and malls to manage parking zones, specifically handling the high-demand reservation of limited EV charging spots with concurrency-safe booking.
 
-**Live API URL:** `https://your-deployed-url.com` *(Update after deployment)*
+**Live API URL:** `https://your-deployed-url.com`
 
 ---
+
+## 📑 Table of Contents
+
+- ✨[Features](#-features)
+- 🛠️[Tech Stack](#-tech-stack)
+- 🚀[Getting Started](#-getting-started)
+- 🌐[API Endpoints](#-api-endpoints)
+- 🏛️[Architecture](#-architecture)
+- 🎯[Concurrency Safety](#-concurrency-safety)
+- 📁[Project Structure](#-project-structure)
+- ✒️[Author](#-author)
 
 ## ✨ Features
 

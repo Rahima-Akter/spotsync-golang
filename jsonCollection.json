@@ -52,7 +52,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@spotsync.com\",\n  \"password\": \"securePassword123\",\n  \"role\": \"driver\"\n}"
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@spotsync.com\",\n  \"password\": \"secure123\",\n  \"role\": \"driver\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/auth/register",
@@ -74,7 +74,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@spotsync.com\",\n  \"password\": \"adminPassword123\",\n  \"role\": \"admin\"\n}"
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@spotsync.com\",\n  \"password\": \"secure123\",\n  \"role\": \"admin\"\n}"
             },
             "url": {
               "raw": "{{base_url}}/auth/register",
