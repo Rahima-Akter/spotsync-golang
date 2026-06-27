@@ -26,7 +26,7 @@ type Config struct {
 func Load() *Config {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatal("Warning: .env file not found, using environment variables")
+		log.Println("Warning: .env file not found, using environment variables")
 	}
 
 	jwtExpiryHours, err := strconv.Atoi(getEnv("JWT_EXPIRY_HOURS", "24"))
@@ -34,8 +34,13 @@ func Load() *Config {
 		log.Fatal("Invalid JWT_EXPIRY_HOURS value")
 	}
 
+	port := os.Getenv("PORT")
+	if port == "" {
+		port = getEnv("APP_PORT", "8080")
+	}
+
 	config := &Config{
-		AppPort:        getEnv("APP_PORT", "8080"),
+		AppPort:        port,
 		AppEnv:         getEnv("APP_ENV", "development"),
 		DatabaseURL:    getEnv("DATABASE_URL", ""),
 		JWTSecret:      getEnv("JWT_SECRET", "default-secret-change-me"),
