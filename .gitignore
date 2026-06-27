@@ -1,6 +1,29 @@
+# Binaries
+/tmp
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Test binary
+*.test
+
 # Environment files
 .env
-.env.*
 
-# Build output
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+build-errors.log
+
+# Air
 tmp/
