@@ -1,0 +1,545 @@
+{
+  "info": {
+    "name": "SpotSync - Parking & EV Charging API",
+    "description": "Complete API collection for testing SpotSync endpoints.\n\n## Authentication Flow\n1. Register a new user (or use existing)\n2. Login to get JWT token (token is auto-set via Tests script)\n3. Use protected endpoints\n\n## Roles\n- **driver**: View zones, reserve spots, manage own reservations\n- **admin**: All driver actions + manage zones, view all reservations",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080/api/v1",
+      "type": "string"
+    },
+    {
+      "key": "token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "🏥 Health",
+      "item": [
+        {
+          "name": "Health Check",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/health",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "8080",
+              "path": ["health"]
+            },
+            "description": "Check if the API is running"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Register Driver",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john.doe@spotsync.com\",\n  \"password\": \"securePassword123\",\n  \"role\": \"driver\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register a new driver account\n\nDefault role is 'driver' if not specified"
+          }
+        },
+        {
+          "name": "Register Admin",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Admin User\",\n  \"email\": \"admin@spotsync.com\",\n  \"password\": \"adminPassword123\",\n  \"role\": \"admin\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Register an admin account"
+          }
+        },
+        {
+          "name": "Login (Driver)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Auto-save token after login",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    const token = response.data.token;",
+                  "    pm.collectionVariables.set('token', token);",
+                  "    console.log('✅ Token saved automatically!');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@spotsync.com\",\n  \"password\": \"securePassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login as driver to get JWT token\n\nToken is automatically saved to collection variables!"
+          }
+        },
+        {
+          "name": "Login (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    const token = response.data.token;",
+                  "    pm.collectionVariables.set('token', token);",
+                  "    console.log('✅ Admin token saved!');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@spotsync.com\",\n  \"password\": \"adminPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Login as admin to get JWT token with admin privileges"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🅿️ Parking Zones",
+      "item": [
+        {
+          "name": "Get All Zones",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/zones",
+              "host": ["{{base_url}}"],
+              "path": ["zones"]
+            },
+            "description": "Get all parking zones with availability (public)"
+          }
+        },
+        {
+          "name": "Get Single Zone",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/zones/1",
+              "host": ["{{base_url}}"],
+              "path": ["zones", "1"]
+            },
+            "description": "Get details of a single parking zone"
+          }
+        },
+        {
+          "name": "Create Zone (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Terminal 1 EV Charging\",\n  \"type\": \"ev_charging\",\n  \"total_capacity\": 20,\n  \"price_per_hour\": 5.50\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/zones",
+              "host": ["{{base_url}}"],
+              "path": ["zones"]
+            },
+            "description": "Create a new parking zone (Admin only)\n\nZone types: general, ev_charging, covered"
+          }
+        },
+        {
+          "name": "Create Zone - Covered Parking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Mall Covered Parking\",\n  \"type\": \"covered\",\n  \"total_capacity\": 50,\n  \"price_per_hour\": 3.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/zones",
+              "host": ["{{base_url}}"],
+              "path": ["zones"]
+            },
+            "description": "Create a covered parking zone"
+          }
+        },
+        {
+          "name": "Create Zone - General Parking",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Airport General Parking\",\n  \"type\": \"general\",\n  \"total_capacity\": 200,\n  \"price_per_hour\": 2.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/zones",
+              "host": ["{{base_url}}"],
+              "path": ["zones"]
+            },
+            "description": "Create a general parking zone"
+          }
+        },
+        {
+          "name": "Update Zone (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"price_per_hour\": 6.00,\n  \"total_capacity\": 25\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/zones/1",
+              "host": ["{{base_url}}"],
+              "path": ["zones", "1"]
+            },
+            "description": "Update a parking zone (Admin only)\n\nOnly send fields you want to update"
+          }
+        },
+        {
+          "name": "Delete Zone (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/zones/3",
+              "host": ["{{base_url}}"],
+              "path": ["zones", "3"]
+            },
+            "description": "Delete a parking zone (Admin only)"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🎯 Reservations",
+      "item": [
+        {
+          "name": "Reserve Spot",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zone_id\": 1,\n  \"license_plate\": \"ABC-1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "description": "Reserve a parking spot (Authenticated)\n\nUses concurrency-safe booking with row-level locking"
+          }
+        },
+        {
+          "name": "Reserve Spot 2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zone_id\": 1,\n  \"license_plate\": \"XYZ-5678\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            }
+          },
+          "description": "Another reservation - useful for testing multiple bookings"
+        },
+        {
+          "name": "Get My Reservations",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/my-reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "my-reservations"]
+            },
+            "description": "View your own reservations with zone details"
+          }
+        },
+        {
+          "name": "Cancel Reservation",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations/1",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "1"]
+            },
+            "description": "Cancel your own reservation\n\nYou can only cancel your own reservations"
+          }
+        },
+        {
+          "name": "Get All Reservations (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "description": "View all reservations in the system (Admin only)\n\nLogin as admin first!"
+          }
+        }
+      ]
+    },
+    {
+      "name": "🧪 Error Testing",
+      "item": [
+        {
+          "name": "Invalid Register (Missing Fields)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"\",\n  \"email\": \"not-an-email\",\n  \"password\": \"123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/register",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "register"]
+            },
+            "description": "Test validation errors (400 Bad Request expected)"
+          }
+        },
+        {
+          "name": "Invalid Login (Wrong Password)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"john.doe@spotsync.com\",\n  \"password\": \"wrongpassword\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Test invalid credentials (401 Unauthorized expected)"
+          }
+        },
+        {
+          "name": "No Token (Protected Route)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/reservations/my-reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations", "my-reservations"]
+            },
+            "description": "Try accessing protected route without token (401 expected)"
+          }
+        },
+        {
+          "name": "Driver Tries Admin Route",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Hacker Zone\",\n  \"type\": \"general\",\n  \"total_capacity\": 100,\n  \"price_per_hour\": 1.00\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/zones",
+              "host": ["{{base_url}}"],
+              "path": ["zones"]
+            },
+            "description": "Login as driver first, then try to create zone (403 Forbidden expected)"
+          }
+        },
+        {
+          "name": "Duplicate License Plate",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{token}}"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"zone_id\": 1,\n  \"license_plate\": \"ABC-1234\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/reservations",
+              "host": ["{{base_url}}"],
+              "path": ["reservations"]
+            },
+            "description": "Try reserving with same license plate twice (409 Conflict expected)"
+          }
+        }
+      ]
+    }
+  ]
+}
