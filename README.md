@@ -9,7 +9,7 @@
 
 A centralized platform for busy airports and malls to manage parking zones, specifically handling the high-demand reservation of limited EV charging spots with concurrency-safe booking.
 
-**Live API URL:** `https://your-deployed-url.com`
+**Live API URL:** `https://spotsync-golang.onrender.com/api/v1`
 
 ---
 
